@@ -7,17 +7,17 @@
 using namespace std;
 using namespace cv;
 
-// 保存图像列表
+// 保存图像的容器
 vector<Mat> imgs;
-// 保存灰度图列表
+// 保存灰度图的容器
 vector<Mat> imgGrays;
-// 图像平面二维角点
+// 一张图像的平面二维角点
 vector<Point2f> corners;
-// 保存图像平面二维角点的容器
+// 保存所有图像二维角点的容器
 vector<vector<Point2f> > image_points;
-// 世界坐标系的三维点
+// 一张图像在世界坐标系下的三维角点
 vector<Point3f> opt;
-// 保存所有世界坐标系的三维点容器
+// 保存所有图像三维点的容器
 vector<vector<Point3f> > object_points;
 // 函数声明
 void imgshow(string&,Mat&);
@@ -25,12 +25,12 @@ Mat fillImage(Mat&,Mat&,int);
 void pinholeModel();
 
 // 图片路径
-string PATH="./q1/";
+string PATH="./201-210_q2/201/";
 // 图片格式
 string FORMAT="bmp";
 // 图片数量
-int NUM=6;
-//角点横纵数量
+int NUM=9;
+// 角点横纵数量
 int board_w = 14;
 int board_h = 9;
 
@@ -111,7 +111,14 @@ void pinholeModel(){
 	cout << distCoeffs.rows << "x" <<distCoeffs.cols << endl;
 	cout<<"畸变系数:k1,k2,p1,p2,k3"<<endl;
 	cout << distCoeffs << endl;
-
+	
+	/* 图像矫正demo
+	Mat test_image2 = imread("./201-210_q2/201/6.bmp");
+	Mat show_image;
+	undistort(test_image2, show_image, cameraMatrix, distCoeffs);
+	imgshow(string("demo图矫正"),show_image);
+	*/
+	
 	//计算平均重投影误差
 	Err tmpE=computeReprojectionErrors(object_points,image_points,rvecs,tvecs,cameraMatrix,distCoeffs);
 	double mean_error=tmpE.mean_err;
@@ -157,7 +164,7 @@ int main(int argc,char *argv[]){
 	image_points.clear();
 	opt.clear();
 	object_points.clear();
-	/*
+	
 	if( argc < 2 )
     {
         printf( "This is a camera calibration program.\n"
@@ -175,23 +182,23 @@ int main(int argc,char *argv[]){
 	}else{
 		return 0;
 	}
-	*/
+	
+	//处理图像并push到容器
 	for(int imgNum=1;imgNum<=NUM;imgNum++){
 		stringstream str;
 		str << PATH << imgNum << "."<<FORMAT;
 		Mat imageGray;
 		Mat img = imread(str.str());
-		imgshow(string("原图"),img);
-	
+		//imgshow(string("原图"),img);
 
 		//亚像素精确需要灰度化
 		cvtColor(img, imageGray, COLOR_BGR2GRAY);//灰度化
-		imgshow(string("灰度化图像"),imageGray);
+		//imgshow(string("灰度化图像"),imageGray);
 
 		imgs.push_back(img);
 		imgGrays.push_back(imageGray);
 		cout<<endl;
-		cout<<str.str()<<endl;
+		cout<<str.str()<<"--入栈"<<endl;
 	}
 
 
@@ -211,9 +218,9 @@ int main(int argc,char *argv[]){
 			//将找到的二维角点放入容器中
 			image_points.push_back(corners);
 			//显示图像
-			stringstream str;
-			str<<i;
-			imgshow(str.str(),imgs[i]);
+			//stringstream str;
+			//str<<i+1;
+			//imgshow(str.str(),imgs[i]);
 
 			//单张图片的三维角点坐标记录
 			opt.resize(board_n);
@@ -227,6 +234,6 @@ int main(int argc,char *argv[]){
 	}
 	//调用小孔成像
 	pinholeModel();
-	waitKey(30000);
+	//waitKey(100000);
     return 0;
 }

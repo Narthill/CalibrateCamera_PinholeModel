@@ -103,7 +103,7 @@ void pinholeModel(){
 			distCoeffs,
             rvecs,
 			tvecs);
-	
+
 	cout << " Camera intrinsic: " << cameraMatrix.rows << "x" << cameraMatrix.cols << endl;
 	cout << "相机矩阵:[fx, 0, u0; 0, fy, v0; 0,0,1]" <<endl;
 	cout << cameraMatrix<< endl;
@@ -111,14 +111,14 @@ void pinholeModel(){
 	cout << distCoeffs.rows << "x" <<distCoeffs.cols << endl;
 	cout<<"畸变系数:k1,k2,p1,p2,k3"<<endl;
 	cout << distCoeffs << endl;
-	
-	/* 图像矫正demo
+
+	/* 畸变矫正demo
 	Mat test_image2 = imread("./201-210_q2/201/6.bmp");
 	Mat show_image;
 	undistort(test_image2, show_image, cameraMatrix, distCoeffs);
 	imgshow(string("demo图矫正"),show_image);
 	*/
-	
+
 	//计算平均重投影误差
 	Err tmpE=computeReprojectionErrors(object_points,image_points,rvecs,tvecs,cameraMatrix,distCoeffs);
 	double mean_error=tmpE.mean_err;
@@ -157,14 +157,14 @@ void imgshow(string& title,Mat& srcImg){
 
 int main(int argc,char *argv[]){
 
-	
+
 	imgs.clear();
 	imgGrays.clear();
 	corners.clear();
 	image_points.clear();
 	opt.clear();
 	object_points.clear();
-	
+
 	if( argc < 2 )
     {
         printf( "This is a camera calibration program.\n"
@@ -172,7 +172,7 @@ int main(int argc,char *argv[]){
 			"     -p <params>         # 参数设置：1.文件夹路径，2.图片数量，3.图像格式，4.角点长，5.角点宽\n");
 		return 0;
     }
-	
+
 	if(!strcmp(argv[1],"-p")){
 		PATH=argv[2];
 		NUM=atoi(argv[3]);
@@ -182,7 +182,7 @@ int main(int argc,char *argv[]){
 	}else{
 		return 0;
 	}
-	
+
 	//处理图像并push到容器
 	for(int imgNum=1;imgNum<=NUM;imgNum++){
 		stringstream str;
@@ -207,7 +207,7 @@ int main(int argc,char *argv[]){
 	Size board_sz= Size(board_w,board_h);
 
 	for(unsigned int i = 0; i < imgs.size(); i++){
-		
+
 		//找图像平面二维角点
 		bool found = findChessboardCorners(imgs[i], board_sz,corners,CALIB_CB_ADAPTIVE_THRESH |CALIB_CB_NORMALIZE_IMAGE);
 		if(found){
